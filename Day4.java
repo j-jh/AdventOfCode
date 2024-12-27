@@ -15,11 +15,13 @@ public class Day4 {
 	private final Map<String, int[]> directions;
 
 	// constructor to initialize board, directions
-	// populates directions using setDirections()
+	// populates directions with setDirections()
+	// processes input file with processInputFile()
 	public Day4() {
 		this.board = new ArrayList<>();
 		this.directions = new HashMap<>();
 		setDirections();
+		processInputFile("day4.txt");
 	}
 
 	// populates directions map with 8 direction key-value pairs
@@ -155,7 +157,6 @@ public class Day4 {
 
 	// run solution for day 4
 	public void runDay4() {
-		processInputFile("day4.txt");
 		int xmasCount = countXMASinBoard();
 		int xPatternCount = countXPatterninBoard();
 		System.out.println("Number of \"XMAS\" from input file: " + xmasCount);
