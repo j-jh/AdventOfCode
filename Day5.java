@@ -9,11 +9,19 @@ import java.util.Scanner;
 import java.util.Set;
 
 public class Day5 {
+	// stores key: number to a value: set
+	// set dictates what integers must come before our key: number
 	private final Map<Integer, Set<Integer>> numberToOrderSet;
+	// 2d list of all rows from input file
 	private final List<List<Integer>> listOfRows;
+	// 2d list of valid rows
 	private final List<List<Integer>> validRows;
+	// 2d list of invalid rows (does not follow numberToOrderSet numberToOrderSet
+	// ordering condition)
 	private final List<List<Integer>> invalidRows;
 
+	// constructor to initialize data structures
+	// methods to populate data structures
 	public Day5() {
 		this.numberToOrderSet = new HashMap<>();
 		this.listOfRows = new ArrayList<>();
@@ -23,6 +31,7 @@ public class Day5 {
 		sortRowsToLists();
 	}
 
+	// returns int sum of middle number from row data structure
 	private int sumOfMiddleNumFromRows() {
 		int sum = 0;
 		for (List<Integer> row : validRows) {
@@ -32,6 +41,8 @@ public class Day5 {
 		return sum;
 	}
 
+	// adds rows from listOfRows to validRows and invalidRows based off
+	// numberToOrderSet ordering condition
 	private void sortRowsToLists() {
 		for (List<Integer> row : listOfRows) {
 			Set<Integer> currentRowNums = new HashSet<>();
@@ -56,6 +67,7 @@ public class Day5 {
 		}
 	}
 
+	// parses line to row of integers to add to listOfRows structure
 	private void processSecondInputSectionToList(String line) {
 		String[] charArray = line.split("\\,");
 		List<Integer> row = new ArrayList<>();
@@ -65,6 +77,7 @@ public class Day5 {
 		this.listOfRows.add(row);
 	}
 
+	// parses line to two integers to add to numberToOrderSet structure
 	private void processFirstInputSectionToMap(String line) {
 		String[] lineParts = line.split("\\|");
 		// split by character literal
@@ -77,6 +90,9 @@ public class Day5 {
 
 	}
 
+	// processes input file
+	// before blank line: passes each line to processSecondInputSectionToList()
+	// after blank line: passes each line to processFirstInputSectionToMap()
 	private void processInputFile(String inputPath) {
 		boolean doneProcessingOrderings = false;
 		// if line is blank, ordering process complete, proceed to process rows
@@ -101,9 +117,10 @@ public class Day5 {
 			System.err.println("File not found: " + error.getMessage());
 		}
 	}
-
+	
+	// method to run day 5 solution
 	public void runDay5Solution() {
 		int sum = sumOfMiddleNumFromRows();
-		System.out.println("Sum of middle number from valid rows: "+ sum);
+		System.out.println("Sum of middle number from valid rows: " + sum);
 	}
 }
