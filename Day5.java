@@ -42,7 +42,8 @@ public class Day5 {
 	}
 
 	// adds rows from listOfRows to validRows and invalidRows based off
-	// numberToOrderSet ordering constraints: integer at key must come before numbers in set
+	// numberToOrderSet ordering constraints: integer at key must come before
+	// numbers in set
 	private void sortRowsToLists() {
 		for (List<Integer> row : listOfRows) {
 			Set<Integer> currentRowNums = new HashSet<>();
@@ -50,13 +51,9 @@ public class Day5 {
 			for (int num : row) {
 				if (!currentRowNums.isEmpty()) {
 					// checks if numbers from current row exist in ordered set from map
-					Set<Integer> intersection = new HashSet<>(currentRowNums);
-					if (this.numberToOrderSet.containsKey(num)) {
-						intersection.retainAll(this.numberToOrderSet.get(num));
-						// if a number exists, intersection set will not be empty. set to invalid row.
-						if (!intersection.isEmpty()) {
-							isValidRow = false;
-						}
+					isValidRow = checkIfSetsOverlap(num, currentRowNums);
+					if (!isValidRow) {
+						break;
 					}
 				}
 				currentRowNums.add(num);
@@ -67,6 +64,20 @@ public class Day5 {
 				this.invalidRows.add(row);
 			}
 		}
+	}
+
+	// checks if two sets overlap
+	// nice little comparison method
+	private boolean checkIfSetsOverlap(int key, Set<Integer> currentRowNums) {
+		Set<Integer> intersection = new HashSet<>(currentRowNums);
+		if (this.numberToOrderSet.containsKey(key)) {
+			intersection.retainAll(this.numberToOrderSet.get(key));
+			// if a number exists, intersection set will not be empty. set to invalid row.
+			if (!intersection.isEmpty()) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	// parses line to row of integers to add to listOfRows structure
