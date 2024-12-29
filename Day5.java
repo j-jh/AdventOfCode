@@ -10,7 +10,7 @@ import java.util.Set;
 
 public class Day5 {
 	// stores key: number to a value: set
-	// set dictates what integers must come before our key: number
+	// tracks ordering constraints: integer at key must come before numbers in set
 	private final Map<Integer, Set<Integer>> numberToOrderSet;
 	// 2d list of all rows from input file
 	private final List<List<Integer>> listOfRows;
@@ -42,16 +42,18 @@ public class Day5 {
 	}
 
 	// adds rows from listOfRows to validRows and invalidRows based off
-	// numberToOrderSet ordering condition
+	// numberToOrderSet ordering constraints: integer at key must come before numbers in set
 	private void sortRowsToLists() {
 		for (List<Integer> row : listOfRows) {
 			Set<Integer> currentRowNums = new HashSet<>();
 			boolean isValidRow = true;
 			for (int num : row) {
 				if (!currentRowNums.isEmpty()) {
+					// checks if numbers from current row exist in ordered set from map
 					Set<Integer> intersection = new HashSet<>(currentRowNums);
 					if (this.numberToOrderSet.containsKey(num)) {
 						intersection.retainAll(this.numberToOrderSet.get(num));
+						// if a number exists, intersection set will not be empty. set to invalid row.
 						if (!intersection.isEmpty()) {
 							isValidRow = false;
 						}
@@ -117,7 +119,7 @@ public class Day5 {
 			System.err.println("File not found: " + error.getMessage());
 		}
 	}
-	
+
 	// method to run day 5 solution
 	public void runDay5Solution() {
 		int sum = sumOfMiddleNumFromRows();
