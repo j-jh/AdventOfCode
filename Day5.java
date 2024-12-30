@@ -15,51 +15,37 @@ public class Day5 {
 	private Map<Integer, Set<Integer>> numberToOrderSet;
 	// 2d list of all rows from input file
 	private List<List<Integer>> listOfRows;
-	// 2d list of valid rows
-	private List<List<Integer>> validRows;
-	// 2d list of invalid rows (does not follow numberToOrderSet numberToOrderSet
-	// ordering condition)
-	private List<List<Integer>> invalidRows;
-	// sorted invalid rows
-	private List<List<Integer>> sortedInvalidRows;
+	// sum of middle number from all valid rows
+	private int sumOfValidRowMiddleNums;
+	// sum of middle number from all invalid rows
+	private int sumOfInvalidRowMiddleNums;
 
-	// constructor to initialize data structures
+	// constructor to initialize variables
 	// methods to populate data structures
 	public Day5() {
 		this.numberToOrderSet = new HashMap<>();
 		this.listOfRows = new ArrayList<>();
-		this.validRows = new ArrayList<>();
-		this.invalidRows = new ArrayList<>();
-		this.sortedInvalidRows = new ArrayList<>();
+		sumOfValidRowMiddleNums = 0;
+		sumOfInvalidRowMiddleNums = 0;
 		processInputFile("day5.txt");
 		sortRowsToLists();
-		populateSortedInvalidRows();
-	}
-
-	// populate sortedInvalidRows structure with sorted rows (using
-	// customRowSorter()) from invalidRows structure
-	private void populateSortedInvalidRows() {
-		for (List<Integer> row : invalidRows) {
-			List<Integer> processedRow = customRowSorter(row, this.numberToOrderSet);
-			this.sortedInvalidRows.add(processedRow);
-		}
 	}
 
 	// takes input row, sorts each num in row based off ordering constraints from
-	// numberToOrderSet.
+	// numberToOrderSet map
 	// integers at key must come before numbers in value set
-	private List<Integer> customRowSorter(List<Integer> row, Map<Integer, Set<Integer>> orderingConstraintsMap) {
+	private List<Integer> customRowSorter(List<Integer> row) {
 		List<Integer> sortedRow = row;
 		sortedRow.sort((a, b) -> {
 			if (a.equals(b)) {
 				// if equal, no order
 				return 0;
 			}
-			if (orderingConstraintsMap.containsKey(a) && orderingConstraintsMap.get(a).contains(b)) {
+			if (this.numberToOrderSet.containsKey(a) && this.numberToOrderSet.get(a).contains(b)) {
 				// when a comes before b
 				return -1;
 			}
-			if (orderingConstraintsMap.containsKey(b) && orderingConstraintsMap.get(b).contains(a)) {
+			if (this.numberToOrderSet.containsKey(b) && this.numberToOrderSet.get(b).contains(a)) {
 				// when b comes before a
 				return 1;
 			}
@@ -69,34 +55,26 @@ public class Day5 {
 		return sortedRow;
 	}
 
-	// returns int sum of middle number from row data structure
-	private int sumOfMiddleNumFromRows(List<List<Integer>> listOfRows) {
-		int sum = 0;
-		for (List<Integer> row : listOfRows) {
-			int middle = row.size() / 2;
-			sum += row.get(middle);
-		}
-		return sum;
-	}
-
 	// adds rows from listOfRows to validRows and invalidRows based off
 	// numberToOrderSet ordering constraints: integer at key must come before
 	// numbers in set
 	private void sortRowsToLists() {
 		for (List<Integer> row : listOfRows) {
 			Set<Integer> seenRowNums = new HashSet<>();
+			boolean isValidRow = true;
 			for (int num : row) {
 				if (!seenRowNums.isEmpty())
-					if (!checkIfOverlapWithSeenRowNums(num, seenRowNums)) {
-						this.invalidRows.add(row);
-						break;
-					}
+					isValidRow = checkIfOverlapWithSeenRowNums(num, seenRowNums);
+				if (!isValidRow) {
+					List<Integer> sortedInvalidRow = customRowSorter(row);
+					this.sumOfInvalidRowMiddleNums += sortedInvalidRow.get(sortedInvalidRow.size() / 2);
+					break;
+				}
 				seenRowNums.add(num);
 			}
-			if (this.invalidRows.contains(row)) {
-				continue;
+			if (isValidRow) {
+				this.sumOfValidRowMiddleNums += row.get(row.size() / 2);
 			}
-			this.validRows.add(row);
 		}
 	}
 
@@ -164,10 +142,7 @@ public class Day5 {
 
 	// method to run day 5 solution
 	public void runDay5Solution() {
-		int answerOne = sumOfMiddleNumFromRows(this.validRows);
-		System.out.println("Sum of middle number from valid rows: " + answerOne);
-		int answerTwo = sumOfMiddleNumFromRows(this.sortedInvalidRows);
-		System.out.println("Sum of middle number from sorted invalid rows: " + answerTwo);
-
+		System.out.println("Sum of middle number from valid rows: " + this.sumOfValidRowMiddleNums);
+		System.out.println("Sum of middle number from sorted invalid rows: " + this.sumOfInvalidRowMiddleNums);
 	}
 }
