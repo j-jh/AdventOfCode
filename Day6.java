@@ -93,7 +93,7 @@ public class Day6 {
 			// cast obj to type visitedposition
 			VisitedPosition other = (VisitedPosition) obj;
 			// returns row, col, direction check
-			return this.row == other.row && this.col == other.col && this.direction == other.direction;
+			return super.equals(obj) && this.direction == other.direction;
 		}
 
 		// override hashcode method after overriding equals method
@@ -255,30 +255,39 @@ public class Day6 {
 
 	// handles boundaries, movement, count, and board character update
 	private int makeMove(int rowMove, int colMove) {
+		// check if move is out of bounds
 		if (!boundaryCheck(rowMove, colMove)) {
 			// out of bounds
 			return 1;
 		}
 
+		// calculate new position
+		int newRow = rowPosition + rowMove;
+		int newCol = colPosition + colMove;
+		char targetCell = this.board.get(newRow).get(newCol);
+
 		// within bounds to move
-		if (this.board.get(rowPosition + rowMove).get(colPosition + colMove) == '#') {
+		if (targetCell == '#') {
 			// rotate stance, continue
 			directionCharsIndex++;
 			directionCharacter = directionChars[directionCharsIndex % directionChars.length];
 			return 2;
 		}
-		// Move was successful
-		if (this.board.get(rowPosition + rowMove).get(colPosition + colMove) == '.') {
+
+		// move was successful
+		if (targetCell == '.') {
 			// unique visit
 			count++;
 		}
-		// move directionCharacter
-		this.board.get(rowPosition + rowMove).set(colPosition + colMove, directionCharacter);
-		// mark visited square with 'x'
-		this.board.get(rowPosition).set(colPosition, 'X');
-		// add coordinate to seenPositions set
-		return 3;
 
+		// move directioncharacter
+		this.board.get(newRow).set(newCol, directionCharacter);
+		// mark visited square with 'x'
+		this.board.get(rowPosition).set(colPosition, 'x');
+
+		// update current position
+		updatePosition(rowMove, colMove);
+		return 3;
 	}
 
 	// update row and col position
@@ -288,16 +297,17 @@ public class Day6 {
 		this.colPosition += colMove;
 	}
 
-	// check if loop present in board.
-	// loop is defined: visit the same position wiht the same row, col, and
-	// direciton char twice
+	// check if loop present in board
+	// loop is defined: visit the same position with the same row, col, and
+	// direction char twice
 	private boolean containsLoopAfterObstruction() {
 		// set to store unique visitedposition instances
-		Set<VisitedPosition> currentPathpositions = new HashSet<>();
+		Set<VisitedPosition> currentPathPositions = new HashSet<>();
 		while (true) {
-			// cycles through indicies, prevent out of bounds
+			// cycles through indices, prevent out of bounds
 			directionCharsIndex %= directionChars.length;
-			// see directionMoves array for movement coordinates
+
+			// see directionmoves array for movement coordinates
 			int rowMove = directionMoves[directionCharsIndex][0];
 			int colMove = directionMoves[directionCharsIndex][1];
 
@@ -310,24 +320,24 @@ public class Day6 {
 				// obstacle hit
 				continue;
 			}
+
 			VisitedPosition checkVisitedPosition = new VisitedPosition(rowPosition, colPosition, directionCharacter);
 			// add coordinate to currentpathpositions set
-			if (currentPathpositions.contains(checkVisitedPosition)) {
+			if (currentPathPositions.contains(checkVisitedPosition)) {
 				return true;
 			}
-			currentPathpositions.add(checkVisitedPosition);
-			updatePosition(rowMove, colMove);
-
+			currentPathPositions.add(checkVisitedPosition);
 		}
 		return false;
 	}
 
-	// continuously move 1 step in given direction until boundaryCheck() == false
+	// continuously move 1 step in given direction until boundarycheck() == false
 	private int countUniqueVisits() {
 		while (true) {
-			// cycles through indicies, prevent out of bounds
+			// cycles through indices, prevent out of bounds
 			directionCharsIndex %= directionChars.length;
-			// see directionMoves array for movement coordinates
+
+			// see directionmoves array for movement coordinates
 			int rowMove = directionMoves[directionCharsIndex][0];
 			int colMove = directionMoves[directionCharsIndex][1];
 
@@ -341,11 +351,9 @@ public class Day6 {
 				// obstacle hit
 				continue;
 			}
-			// add coordinate to seenPositions set
+			// add coordinate to seenpositions set
 			seenPositions.add(new VisitedPosition(rowPosition, colPosition, directionCharacter));
-			updatePosition(rowMove, colMove);
 		}
-
 		// add final move to seenpositions
 		seenPositions.add(new VisitedPosition(rowPosition, colPosition, directionCharacter));
 		return count;
@@ -353,10 +361,10 @@ public class Day6 {
 
 	// runs solution
 	public void runSolution() {
-		System.out.println("Number of unique squares visited: " + countUniqueVisits());
+		System.out.println("number of unique squares visited: " + countUniqueVisits());
 		resetBoardToDefault();
 		System.out
-				.println("Number of unique obstacle placements to cause a loop: " + countValidObstructionPlacements());
-
+				.println("number of unique obstacle placements to cause a loop: " + countValidObstructionPlacements());
 	}
+
 }
